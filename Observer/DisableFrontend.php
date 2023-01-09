@@ -29,13 +29,18 @@ class DisableFrontend implements ObserverInterface{
         RedirectInterface $redirect,
         Data $helperBackend,
         DisableFrontendHelper $disableFrontendHelper,
-        \Psr\Log\LoggerInterface $logger
+        \Psr\Log\LoggerInterface $logger,
+        \Magento\Framework\App\ResponseFactory $responseFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
+        
     ) {
         $this->_actionFlag = $actionFlag;
         $this->redirect = $redirect;
         $this->helperBackend = $helperBackend;
         $this->logger = $logger;
         $this->disableFrontendHelper = $disableFrontendHelper;
+        $this->responseFactory = $responseFactory;
+        $this->storeManager = $storeManager;
     }
     
     /**
@@ -48,14 +53,20 @@ class DisableFrontend implements ObserverInterface{
      * @return void
      */
     public function execute(\Magento\Framework\Event\Observer $observer){
-
-        //$this->logger->info('TEST');
+        $task = $this->disableFrontendHelper->getConfigValue();
+         //$this->logger->info('TEST');
         
-        $this->_actionFlag->set('', \Magento\Framework\App\Action\Action::FLAG_NO_DISPATCH, true);
-        
-        if($this->disableFrontendHelper->getConfigValue()){//redirect to Admin
-            $controller = $observer->getControllerAction();
-            $this->redirect->redirect($controller->getResponse(),$this->helperBackend->getHomePageUrl());
+        if ($task){
+             $this->_actionFlag->set('', \Magento\Framework\App\Action\Action::FLAG_NO_DISPATCH, true);            
+            if ($task == 2){
+                $root = $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+                $this->responseFactory->create()->setRedirect($root .'\index.html')->sendResponse();
+            }elseif ($task == 3){//redirect to Admin
+                $controller = $observer->getControllerAction();
+                $this->redirect->redirect($controller->getResponse(),$this->helperBackend->getHomePageUrl());
+            }
+        }else{   
+            return $this;
         }
     }
 }

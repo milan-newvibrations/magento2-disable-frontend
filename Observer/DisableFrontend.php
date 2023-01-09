@@ -60,7 +60,8 @@ class DisableFrontend implements ObserverInterface{
              $this->_actionFlag->set('', \Magento\Framework\App\Action\Action::FLAG_NO_DISPATCH, true);            
             if ($task == 2){
                 $root = $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
-                $this->responseFactory->create()->setRedirect($root .'\index.html')->sendResponse();
+                $this->responseFactory->create()->setRedirect($root .'/index.html')->sendResponse();
+                die();
             }elseif ($task == 3){//redirect to Admin
                 $controller = $observer->getControllerAction();
                 $this->redirect->redirect($controller->getResponse(),$this->helperBackend->getHomePageUrl());

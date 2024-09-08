@@ -13,7 +13,9 @@ class DisableFrontend implements ObserverInterface{
     private     $helperBackend;
     private     $logger;
     private     $disableFrontendHelper;
-
+    private     $responseFactory;
+    private     $storeManager;
+    
     /**
      * DisableFrontend constructor.
      *
